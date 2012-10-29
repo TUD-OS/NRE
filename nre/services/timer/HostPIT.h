@@ -55,10 +55,10 @@ public:
     explicit HostPIT(uint period_us);
 
     virtual timevalue_t last_ticks() {
-        return nre::Atomic::read_atonce(_ticks);
+        return nre::Atomic::read_uninterruptible(_ticks);
     }
     virtual timevalue_t current_ticks() {
-        return nre::Atomic::read_atonce(_ticks);
+        return nre::Atomic::read_uninterruptible(_ticks);
     }
     virtual timevalue_t update_ticks(bool refresh_only) {
         return refresh_only ? _ticks : ++_ticks;

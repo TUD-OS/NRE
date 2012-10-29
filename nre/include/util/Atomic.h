@@ -71,9 +71,18 @@ public:
         return __sync_val_compare_and_swap(reinterpret_cast<volatile uint64_t*>(var), oldvalue, newvalue);
     }
 
-    static uint64_t read_atonce(volatile uint64_t &v) {
-        uint32_t lo = 0;
+
+#ifdef __x86_64__
+    static uint64_t read_uninterruptible(volatile uint64_t &v)
+    { return v; }
+
+    static void write_uninterruptible(volatile uint64_t &to, uint64_t v)
+    { to = v; }
+#elif __i386__
+
+    static uint64_t read_uninterruptible(volatile uint64_t &v) {
         uint32_t hi = 0;
+        uint32_t lo = 0;
         // We don't need a lock prefix, because this is only meant to be
         // uninterruptible not atomic. So don't use this for SMP!
         asm ("cmpxchg8b %2\n"
@@ -82,10 +91,9 @@ public:
         return (static_cast<uint64_t>(hi) << 32) | lo;
     }
 
-    static void write_atonce(volatile uint64_t &to, uint64_t value) {
-        to = value;
-        uint32_t nlo = value;
-        uint32_t nhi = value >> 32;
+    static void write_uninterruptible(volatile uint64_t &to, uint64_t v) {
+        uint32_t nlo = v;
+        uint32_t nhi = v >> 32;
         uint32_t olo = 0;
         uint32_t ohi = 0;
 
@@ -97,6 +105,8 @@ public:
              "+a" (olo), "+d" (ohi)
              : "b" (nlo), "c" (nhi));
     }
+
+#endif
 
 private:
     Atomic();

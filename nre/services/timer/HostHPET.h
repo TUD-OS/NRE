@@ -104,16 +104,16 @@ public:
     explicit HostHPET(bool force_legacy);
 
     virtual timevalue_t last_ticks() {
-        return nre::Atomic::read_atonce(_last);
+        return nre::Atomic::read_uninterruptible(_last);
     }
     virtual timevalue_t current_ticks() {
         uint32_t r = _reg->counter[0];
-        return correct_overflow(nre::Atomic::read_atonce(_last), r);
+        return correct_overflow(nre::Atomic::read_uninterruptible(_last), r);
     }
     virtual timevalue_t update_ticks(bool) {
         timevalue_t newv = _reg->counter[0];
-        newv = correct_overflow(nre::Atomic::read_atonce(_last), newv);
-        nre::Atomic::write_atonce(_last, newv);
+        newv = correct_overflow(nre::Atomic::read_uninterruptible(_last), newv);
+        nre::Atomic::write_uninterruptible(_last, newv);
         return newv;
     }
 
