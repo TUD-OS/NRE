@@ -14,8 +14,6 @@
 ;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 ;;; General Public License version 2 for more details.
 
-(require 'smart-tabs-mode)
-
 ;;; To globally install this, add it to your Emacs init file:
 ;;; (add-to-list 'load-path "~/src/path-to-nre/contrib/emacs/")
 ;;; (nre-setup)
@@ -29,16 +27,15 @@
     ;; Set C/C++ indentation style
     (when (member major-mode '(c++-mode c-mode))
       (c-set-style "stroustrup")
-      (setq indent-tabs-mode t
+      (setq indent-tabs-mode nil
             tab-width nre-default-tab-width)
-      (smart-tabs-mode-enable))))
+      (c-set-offset 'case-label '+))))
+
 
 (defun nre-setup ()
   "Registers NRE hooks."
   (interactive)
-  (add-hook 'c-mode-common-hook 'nre-install-style)
-  (smart-tabs-advice c-indent-line   c-basic-offset)
-  (smart-tabs-advice c-indent-region c-basic-offset))
+  (add-hook 'c-mode-common-hook 'nre-install-style))
 
 (provide 'nre)
 
