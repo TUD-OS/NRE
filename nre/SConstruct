@@ -102,9 +102,14 @@ def NREProgram(env, target, source):
     myenv.Install(env['BINARYDIR'], prog)
 
 env.NREProgram = NREProgram
-hostenv.SConscript('tools/SConscript', 'hostenv', variant_dir = builddir + '/tools')
-env.SConscript('libs/SConscript', 'env', variant_dir = builddir + '/libs')
-env.SConscript('services/SConscript', 'env', variant_dir = builddir + '/services')
-env.SConscript('apps/SConscript', 'env', variant_dir = builddir + '/apps')
-env.SConscript('guests/SConscript', 'guestenv', variant_dir = builddir + '/guests')
-env.SConscript('dist/SConscript', 'env', variant_dir = builddir + '/dist')
+hostenv.SConscript('tools/SConscript', 'hostenv',
+                   variant_dir = builddir + '/tools', duplicate=0)
+
+for d in ['libs', 'services', 'apps', 'dist']:
+    env.SConscript(d + '/SConscript', 'env',
+               variant_dir = builddir + '/' + d, duplicate=0)
+
+env.SConscript('guests/SConscript', 'guestenv',
+               variant_dir = builddir + '/guests', duplicate=0)
+
+# EOF

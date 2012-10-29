@@ -54,19 +54,19 @@ public:
     NORETURN static void exit(int code);
     NORETURN static void thread_exit();
 
-    static inline Pd *get_current_pd() {
+    static Pd *get_current_pd() {
         return static_cast<Pd*>(get_current(2));
     }
 
-    static inline void set_current_pd(Pd *pd) {
+    static void set_current_pd(Pd *pd) {
         set_current(2, pd);
     }
 
-    static inline Thread *get_current_thread() {
+    static Thread *get_current_thread() {
         return static_cast<Thread*>(get_current(1));
     }
 
-    static inline void set_current_thread(Thread *t) {
+    static void set_current_thread(Thread *t) {
         set_current(1, t);
     }
 
@@ -77,13 +77,13 @@ public:
 private:
     ExecEnv();
 
-    static inline void *get_current(size_t no) {
+    static void *get_current(size_t no) {
         uintptr_t sp;
         asm volatile ("mov %%" EXPAND(REG(sp)) ", %0" : "=g" (sp));
         return *reinterpret_cast<void**>(((sp & ~(STACK_SIZE - 1)) + STACK_SIZE - no * sizeof(void*)));
     }
 
-    static inline void set_current(size_t no, void *obj) {
+    static void set_current(size_t no, void *obj) {
         uintptr_t sp;
         asm volatile ("mov %%" EXPAND(REG(sp)) ", %0" : "=g" (sp));
         *reinterpret_cast<void**>(((sp & ~(STACK_SIZE - 1)) + STACK_SIZE - no * sizeof(void*))) = obj;
