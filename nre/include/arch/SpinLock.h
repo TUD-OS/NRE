@@ -21,27 +21,17 @@
 
 typedef word_t spinlock_t;
 
-static inline void lock(spinlock_t *val) {
-    asm volatile (
-        "mov	$1,%%" EXPAND(REG(cx)) ";"
-        "1:"
-        "	xor		%%" EXPAND(REG(ax)) ",%%" EXPAND(REG(ax)) ";"
-        "	lock	cmpxchg %%" EXPAND(REG(cx)) ",(%0);"
-        "	jz		2f;"
-        // improves the performance and lowers the power-consumption of spinlocks
-        "	pause;"
-        "	jmp		1b;"
-        "2:;"
-        // outputs
-        :
-        // inputs
-        : "D" (val)
-        // eax, ecx and cc will be clobbered; we need memory as well because *l is changed
-        : EXPAND(REG(ax)), EXPAND(REG(cx)), "cc", "memory"
-    );
+static inline void lock(spinlock_t *val)
+{
+    while (!__sync_bool_compare_and_swap(val, 0, 1))
+        asm volatile ("pause" ::: "memory");
 }
-static inline void unlock(spinlock_t *val) {
-    *val = 0;
+
+static inline void unlock(spinlock_t *val)
+{
+    // Instead of *val = 0, we use the builtin function, because it
+    // also generates a release memory barrier.
+    __sync_lock_release(val);
 }
 
 #ifdef __cplusplus
