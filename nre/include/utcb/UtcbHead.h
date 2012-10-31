@@ -25,7 +25,7 @@
 /**
  * Whether the NOVA change exists (changes the UTCB layout)
  */
-#define USE_UTCB_KERNEL_EXT     1
+#define USE_UTCB_KERNEL_EXT     0
 
 namespace nre {
 
