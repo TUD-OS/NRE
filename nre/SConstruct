@@ -18,8 +18,8 @@ hostenv = Environment(
     CXXFLAGS = '-Wall -Wextra -ansi -g'
 )
 env = Environment(
-    CXXFLAGS = '-Wall -Wextra -ansi',
-    CFLAGS = '-Wall -Wextra',
+    CXXFLAGS = '-Wall -Wextra -ansi -std=c++0x',
+    CFLAGS = '-Wall -Wextra -std=c99',
     # without "-z max-page-size=0x1000" ld produces really large binaries for x86_64, because it
     # aligns to 2MiB (not only in virtual memory, but also in the binary)
     LINKFLAGS = '-Wl,--no-undefined -static -Wl,-static -static-libgcc -Wl,-z,max-page-size=0x1000',
