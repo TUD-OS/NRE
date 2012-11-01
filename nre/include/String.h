@@ -40,7 +40,7 @@ public:
      * @param str the string
      * @param len the length of the string (-1 by default, which means: use strlen())
      */
-    explicit String(const char *str, size_t len = static_cast<size_t>(-1))
+    String(const char *str, size_t len = static_cast<size_t>(-1))
         : _str(), _len() {
         if(str)
             init(str, len);
