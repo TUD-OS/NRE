@@ -2,7 +2,7 @@
 .scons*
 nre/build
 nre/dist/imgs/*
-kernel/nova
+nre/log.txt
 cross/x86_32/build
 cross/x86_32/dist
 cross/x86_32/src

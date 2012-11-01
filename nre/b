@@ -25,17 +25,19 @@ if [ -z "$NRE_GDB_X86_64" ]; then
     export NRE_GDB_X86_64=x86_64-linux-gnu-gdbtui
 fi
 
+if [ -z "$QEMU" ]; then
+   export QEMU=qemu-system-x86_64
+fi
+
 # target dependend values
+
 if [ "$NRE_TARGET" = "x86_32" ]; then
     cross="i686-pc-nulnova"
     gdb=$NRE_GDB_X86_32
-    export QEMU="qemu-system-i386"
-    export QEMU_FLAGS="-cpu phenom "
+    export QEMU_FLAGS="$QEMU_FLAGS -cpu phenom "
 elif [ "$NRE_TARGET" = "x86_64" ]; then
     cross="x86_64-pc-nulnova"
     gdb=$NRE_GDB_X86_64
-    export QEMU="qemu-system-x86_64"
-    export QEMU_FLAGS=""
 else
     echo 'Please define $NRE_TARGET to x86_32 or x86_64!' >&2
     exit 1
@@ -169,55 +171,39 @@ if $dobuild; then
     echo "Building NRE and NOVA with $cpus jobs..."
 
     # build userland
-    scons $opts
-    if [ $? -ne 0 ]; then
-        exit 1
-    fi
+    scons $opts || exit 1
 
-    # checkout nova, if not already done
-    if [ ! -d "$novadir" ]; then
-        $root/tools/checkout.sh $novadir `cat $kerndir/NOVA_URL` `cat $kerndir/NOVA_REVISION` nre-local \
-            `find $root/$kerndir/patches -type f | sort`
-        if [ $? -ne 0 ]; then
-            exit 1
+    if [ -d $novadir/build ]; then
+        pushd $novadir/build
+        
+        # adjust build-flags depending on build-type
+        if [ "`grep 'OFLAGS[[:space:]]*:=[[:space:]]*-O0' Makefile`" != "" ]; then
+            if [ "$NRE_BUILD" != "debug" ]; then
+                # it should be release, but isn't
+                sed --in-place -e \
+                    's/OFLAGS[[:space:]]*:=[[:space:]]*-O0.*/OFLAGS\t\t:= -Os -g/' Makefile
+            fi
+        else
+            if [ "$NRE_BUILD" != "release" ]; then
+                # it should be debug, but isn't
+                sed --in-place -e \
+                    's/OFLAGS[[:space:]]*:=[[:space:]]*.*/OFLAGS\t\t:= -O0 -g -DDEBUG/' Makefile
+            fi
         fi
-    else
-        # check whether NOVA should be updated
-        ( cd $novadir && git branch --contains `cat ../NOVA_REVISION` >/dev/null 2>/dev/null )
-        if [ $? -ne 0 ]; then
-            /bin/echo -n -e "\e[1mWarning: Your NOVA version is not up to date (revision in kernel/NOVA_REVISION does not"
-            /bin/echo -e " appear in your NOVA repo)\e[0m"
-        fi
-    fi
 
-    cd $novadir/build
-    # adjust build-flags depending on build-type
-    if [ "`grep 'OFLAGS[[:space:]]*:=[[:space:]]*-O0' Makefile`" != "" ]; then
-        if [ "$NRE_BUILD" != "debug" ]; then
-            # it should be release, but isn't
-            sed --in-place -e \
-                's/OFLAGS[[:space:]]*:=[[:space:]]*-O0.*/OFLAGS\t\t:= -Os -g/' Makefile
-        fi
-    else
-        if [ "$NRE_BUILD" != "release" ]; then
-            # it should be debug, but isn't
-            sed --in-place -e \
-                's/OFLAGS[[:space:]]*:=[[:space:]]*.*/OFLAGS\t\t:= -O0 -g -DDEBUG/' Makefile
-        fi
-    fi
-    # build NOVA
-    ARCH=$NRE_TARGET make $jobs
-    if [ $? -ne 0 ]; then
-        exit 1
-    fi
+        # build NOVA
+        ARCH=$NRE_TARGET make $jobs || exit 1
 
-    # copy to build-dir; convert to elf32-binary when using x86_64, because grub can't load elf64-binaries.
-    if [ "$NRE_TARGET" = "x86_64" ]; then
-        $crossdir/bin/$cross-objcopy -O elf32-i386 hypervisor-$NRE_TARGET $root/$build/bin/apps/hypervisor
+        # copy to build-dir; convert to elf32-binary when using x86_64, because grub can't load elf64-binaries.
+        if [ "$NRE_TARGET" = "x86_64" ]; then
+            $crossdir/bin/$cross-objcopy -O elf32-i386 hypervisor-$NRE_TARGET $root/$build/bin/apps/hypervisor
+        else
+            cp hypervisor-$NRE_TARGET $root/$build/bin/apps/hypervisor
+        fi
+        popd
     else
-        cp hypervisor-$NRE_TARGET $root/$build/bin/apps/hypervisor
+        echo "NOVA source not found. Not building the hypervisor."
     fi
-    cd $root
 fi
 
 # run the specified command, if any
