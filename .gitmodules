@@ -1,0 +1,3 @@
+[submodule "kernel/nova"]
+	path = kernel/nova
+	url = https://github.com/TUD-OS/NOVA.git
