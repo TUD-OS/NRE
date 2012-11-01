@@ -32,8 +32,7 @@ public:
      *
      * @param initial the initial value for the semaphore (default 1)
      */
-    explicit UserSm(uint initial = 1) : _sem(0), _value(initial) {
-    }
+    explicit UserSm(uint initial = 1) : _sem(0), _value(initial) { }
 
     /**
      * Performs a down on this semaphore. That is, if the value is zero, it blocks on the associated

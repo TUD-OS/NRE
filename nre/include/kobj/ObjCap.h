@@ -49,7 +49,7 @@ protected:
 
 public:
     /**
-     * Destructor. Depending on the flags, it free's the selector and/or the capability (revoke).
+     * Destructor. Depending on the flags, it frees the selector and/or the capability (revoke).
      */
     virtual ~ObjCap();
 

@@ -37,7 +37,7 @@ class DataSpaceManager;
  * A dataspace object represents a piece of memory, that is automatically created at construction
  * and destroyed at destruction. That is, the parent adds this piece of memory to the address
  * space of your Pd and backs it with memory. By delegating sel() to somebody else you can share
- * this memory that guy. That is, he can use the DataSpace(capsel_t) constructor to join your
+ * this memory. The recipient can use the DataSpace(capsel_t) constructor to map this
  * dataspace.
  */
 class DataSpace {

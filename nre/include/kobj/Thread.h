@@ -80,6 +80,7 @@ protected:
     void create(Pd *pd, Syscalls::ECType type, void *sp);
 
 public:
+
     /**
      * Destructor
      */
@@ -91,12 +92,14 @@ public:
     uint flags() const {
         return _flags;
     }
+
     /**
      * @return the stack-address
      */
     uintptr_t stack() const {
         return _stack_addr;
     }
+
     /**
      * @return the utcb
      */
@@ -114,6 +117,7 @@ public:
         assert(next < TLS_SIZE);
         return next;
     }
+
     /**
      * @param idx the TLS index
      * @return the value at given index
@@ -123,6 +127,7 @@ public:
         assert(idx < TLS_SIZE);
         return reinterpret_cast<T>(_tls[idx]);
     }
+
     /**
      * @param idx the TLS index
      * @param val the new value
