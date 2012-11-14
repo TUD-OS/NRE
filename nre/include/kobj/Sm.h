@@ -35,8 +35,7 @@ public:
      * @param cap the selector for the Sm
      */
     // TODO get rid of the bool
-    explicit Sm(capsel_t cap, bool) : ObjCap(cap, KEEP_CAP_BIT | KEEP_SEL_BIT) {
-    }
+    explicit Sm(capsel_t cap, bool) : ObjCap(cap, KEEP_CAP_BIT | KEEP_SEL_BIT) { }
 
     /**
      * Creates a semaphore at given selector. The destructor will not free the selector, but only
