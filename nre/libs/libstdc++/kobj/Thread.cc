@@ -18,10 +18,12 @@
 #include <kobj/LocalThread.h>
 #include <kobj/Sc.h>
 #include <kobj/Pt.h>
+#include <kobj/Vi.h>
 #include <utcb/UtcbFrame.h>
 #include <Compiler.h>
 #include <CPU.h>
 #include <RCU.h>
+#include <util/Sync.h>
 
 namespace nre {
 
@@ -29,7 +31,8 @@ namespace nre {
 size_t Thread::_tls_idx = 1;
 
 Thread::Thread(cpu_t cpu, capsel_t evb, capsel_t cap, uintptr_t stack, uintptr_t uaddr)
-    : Ec(cpu, evb, cap), SListItem(), _rcu_counter(0), _utcb_addr(uaddr), _stack_addr(stack),
+    : Ec(cpu, evb, cap), SListItem(), _waiting_for(nullptr), _mutex_irq(nullptr),
+      _rcu_counter(0), _utcb_addr(uaddr), _stack_addr(stack),
       _flags(), _tls() {
     if(stack == 0 || uaddr == 0) {
         UtcbFrame uf;
@@ -53,6 +56,31 @@ void Thread::create(Pd *pd, Syscalls::ECType type, void *sp) {
     if(pd == Pd::current())
         RCU::add(this);
     sel(scs.release());
+}
+
+void Thread::ensure_mutex_irq()
+{
+    if (EXPECT_FALSE(not _mutex_irq)) {
+        ScopedCapSels s;
+        _mutex_irq = new Vi(this, NULL, s.get(), 1);
+        Sync::memory_barrier();
+    }
+}
+
+void Thread::mutex_wait()
+{
+    Vi::block(1);
+    UNUSED word_t events = current()->fetch_events(1);
+
+    assert(events == 1);
+    assert(current()->_waiting_for == nullptr);
+}
+
+void Thread::mutex_wakeup()
+{
+    assert(current() != this);
+    Sync::memory_barrier();
+    _mutex_irq->trigger();
 }
 
 Thread::~Thread() {

@@ -18,6 +18,7 @@
 
 #include <arch/ExecEnv.h>
 #include <utcb/UtcbHead.h>
+#include <util/Atomic.h>
 
 namespace nre {
 
@@ -59,6 +60,15 @@ public:
         crd = 0;
         crd_translate = 0;
     }
+
+    /**
+     * Fetch the current event bit mask and atomically set it to
+     * zero. Respects the given mask, i.e. only those bits set in the
+     * mask are cleared and returned.
+     *
+     * @return event bitmask
+     */
+    word_t fetch_events(word_t mask = ~0UL) { return mask & __sync_fetch_and_and(&events, ~mask); }
 };
 
 }

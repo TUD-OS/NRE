@@ -1,4 +1,4 @@
-/*
+/* -*- Mode: C++ -*-
  * Copyright (C) 2012, Nils Asmussen <nils@os.inf.tu-dresden.de>
  * Economic rights: Technische Universitaet Dresden (Germany)
  *
@@ -18,10 +18,12 @@
 
 #include <arch/ExecEnv.h>
 #include <kobj/Ec.h>
+#include <kobj/Vi.h>
 #include <mem/DataSpace.h>
 #include <utcb/Utcb.h>
 #include <util/SList.h>
 #include <util/Atomic.h>
+#include <util/Sync.h>
 #include <Syscalls.h>
 
 namespace nre {
@@ -29,6 +31,7 @@ namespace nre {
 class Pd;
 class RCU;
 class RCULock;
+class Mutex;
 
 /**
  * Represents a thread, i.e. an Ec that has a stack and a Utcb. It is the base class for the two
@@ -40,6 +43,7 @@ class RCULock;
 class Thread : public Ec, public SListItem {
     friend class RCU;
     friend class RCULock;
+    friend class Mutex;
 
     static const size_t TLS_SIZE    = 4;
 
@@ -105,6 +109,13 @@ public:
     }
 
     /**
+     * @see UtcbBase::fetch_events
+     *
+     * @return event bitmask
+     */
+    word_t fetch_events(word_t mask = ~0ULL) { return utcb()->fetch_events(mask); }
+
+    /**
      * Creates a new TLS slot for all Threads
      *
      * @return the TLS index
@@ -137,12 +148,28 @@ private:
     Thread(const Thread&);
     Thread& operator=(const Thread&);
 
-    uint32_t _rcu_counter;
-    uintptr_t _utcb_addr;
-    uintptr_t _stack_addr;
-    uint _flags;
-    void *_tls[TLS_SIZE];
-    static size_t _tls_idx;
+    /// Make sure
+    void ensure_mutex_irq();
+
+    /// Block the current thread, because it is blocking for a mutex.
+    void mutex_wait();
+
+
+    /// Called by another thread to wake up this thread from waiting for a mutex.
+    void mutex_wakeup();
+
+    Thread        *_waiting_for;
+
+    // XXX Should actually be embedded in the thread object, but since
+    // ObjCaps cannot be copied, this is not possible right now. :(
+    Vi            *_mutex_irq;
+
+    uint32_t       _rcu_counter;
+    uintptr_t      _utcb_addr;
+    uintptr_t      _stack_addr;
+    uint           _flags;
+    void          *_tls[TLS_SIZE];
+    static size_t  _tls_idx;
 };
 
 }

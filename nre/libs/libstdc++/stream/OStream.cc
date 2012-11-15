@@ -286,11 +286,10 @@ void OStream::printptr(uintptr_t u, uint flags) {
     size_t size = sizeof(uintptr_t);
     flags |= PADZEROS;
     // 2 hex-digits per byte and a ':' every 2 bytes
+    if (size > 2) { write('0'); write('x'); }
     while(size > 0) {
         printupad((u >> (size * 8 - 16)) & 0xFFFF, 16, 4, flags);
         size -= 2;
-        if(size > 0)
-            write(':');
     }
 }
 

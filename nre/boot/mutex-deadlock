@@ -1,0 +1,15 @@
+#!tools/novaboot
+# -*-sh-*-
+QEMU_FLAGS=-m 256 -smp 4
+HYPERVISOR_PARAMS=spinner serial
+bin/apps/root
+bin/apps/acpi provides=acpi
+bin/apps/keyboard provides=keyboard
+bin/apps/reboot provides=reboot
+bin/apps/pcicfg provides=pcicfg
+bin/apps/timer provides=timer
+bin/apps/console provides=console
+bin/apps/mutex-deadlock
+bin/apps/sysinfo
+bin/apps/cycleburner
+

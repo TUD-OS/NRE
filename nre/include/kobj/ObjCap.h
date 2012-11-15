@@ -79,7 +79,7 @@ protected:
     }
 
 private:
-    // object-caps are non-copyable, because I think there are very few usecases and often it
+    // object-caps cannot be copied, because I think there are very few usecases and often it
     // causes problems:
     // - how to clone a Sm? we can't clone the current state of it, i.e. its value. so it would be
     //   a partial clone, which is strange.

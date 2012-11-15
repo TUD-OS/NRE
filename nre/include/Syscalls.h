@@ -44,6 +44,8 @@ class Syscalls {
         SM_CTRL,
         ASSIGN_PCI,
         ASSIGN_GSI,
+        CREATE_VI,
+        VI_CTRL,
         CREATE_EC_GLOBAL = CREATE_EC | FLAG0,
         REVOKE_MYSELF  = REVOKE | FLAG0,
     };
@@ -75,6 +77,14 @@ public:
      */
     enum ScOp {
         GETTIME = 0
+    };
+
+    /**
+     * Vi operations
+     */
+    enum ViOp {
+        BLOCK   = 0,
+        TRIGGER = FLAG0,
     };
 
     /**
@@ -240,6 +250,32 @@ public:
         SyscallABI::syscall(LOOKUP, crd.value(), 0, 0, 0, out1, out2);
         return Crd(out1);
     }
+
+    /**
+     * Creates a new Vi (Virtual IRQ).
+     *
+     * @param vi    the capability selector to use for the Vi
+     * @param ec    the ec that handles this Vi
+     * @param evt   the event bitmask
+     * @param dstpd the Pd in which the Pd should be created
+     * @throws SyscallException if the system-call failed (result != E_SUCCESS)
+     */
+    static void create_vi(capsel_t vi, capsel_t ec_handler, capsel_t ec_recall, uint32_t evt, capsel_t dstpd) {
+        SyscallABI::syscall(vi << 8 | CREATE_VI, dstpd, ec_handler, ec_recall, evt);
+    }
+
+
+    /**
+     * Triggers a Vi or blocks the thread.
+     *
+     * @param vi the capability selector (may be 0 for BLOCK)
+     * @param op the requested operation
+     * @throws SyscallException if the system-call failed (result != E_SUCCESS)
+     */
+    static void vi_ctrl(capsel_t vi, ViOp op, word_t mask) {
+        SyscallABI::syscall(vi << 8 | VI_CTRL | op, mask);
+    }
+
 
 private:
     Syscalls();

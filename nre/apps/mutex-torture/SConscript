@@ -1,0 +1,6 @@
+# -*- Mode: Python -*-
+
+Import('env')
+
+env.NREProgram(env, 'mutex-torture', Glob('*.cc'))
+

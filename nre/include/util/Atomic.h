@@ -107,6 +107,13 @@ public:
     }
 #endif
 
+
+    template <typename T>
+    static T xchg(T &v, T newv)
+    {
+        return __sync_lock_test_and_set(&v, newv);
+    }
+
 private:
     Atomic();
 };

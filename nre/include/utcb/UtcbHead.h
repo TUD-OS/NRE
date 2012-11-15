@@ -60,7 +60,7 @@ protected:
     };
     word_t crd_translate;
     word_t crd;
-    word_t reserved;
+    word_t events;
 };
 
 }
