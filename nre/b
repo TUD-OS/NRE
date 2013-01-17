@@ -226,7 +226,7 @@ case "$cmd" in
     bochs)
         mkdir -p $build/bin/boot/grub
         cp $root/dist/iso/boot/grub/stage2_eltorito $build/bin/boot/grub
-        ./tools/novaboot --build-dir="$PWD/$build" --iso -- $script
+        ./tools/novaboot --build-dir="$PWD/$build" --iso --strip-rom -- $script
         # replace the build path for all ata drives
         path=`echo $build/ | sed -e 's/\//\\\\\//g'`
         sed --in-place -e 's/\(ata.*\?:.*\?path\)=build\/[^\/]*\?\/\(.*\?\),/\1='$path'\2,/g' $bochscfg
@@ -237,16 +237,16 @@ case "$cmd" in
         bochs -f $bochscfg -q
         ;;
     qemu)
-        ./$script --qemu="$QEMU" --qemu-append="$QEMU_FLAGS" --build-dir="$PWD/$build" | tee log.txt
+        ./$script --qemu="$QEMU" --qemu-append="$QEMU_FLAGS" --build-dir="$PWD/$build" --strip-rom | tee log.txt
         ;;
     qemunet)
         $QEMU $QEMU_FLAGS -boot n -bootp pulsar -tftp $NRE_TFTPDIR
         ;;
     srv)
-        ./$script --server --build-dir="$PWD/$build"
+        ./$script --server --build-dir="$PWD/$build" --strip-rom
         ;;
     srvp)
-        ./$script --server -p --build-dir="$PWD/$build"
+        ./$script --server -p --build-dir="$PWD/$build" --strip-rom
         ;;
     dis=*)
         $crossdir/bin/$cross-objdump -SC $build/bin/apps/$binary | less
@@ -276,13 +276,13 @@ case "$cmd" in
         # terminates. to prevent that we use a small program (ignoreint) no block SIGINT,
         # which replaces itself with the given program afterwards
         $build/tools/ignoreint/ignoreint ./$script --qemu="$QEMU" \
-            --build-dir="$PWD/$build" --qemu-append="$QEMU_FLAGS -S -s" > log.txt &
+            --build-dir="$PWD/$build" --strip-rom --qemu-append="$QEMU_FLAGS -S -s" > log.txt &
         $gdb $build/bin/apps/$binary --command=$tmp
         rm -f $tmp
         kill `pgrep qemu` 2>/dev/null
         ;;
     dbgr)
-        ./$script --qemu="$QEMU" --build-dir="$PWD/$build" --qemu-append="$QEMU_FLAGS-S -s"
+        ./$script --qemu="$QEMU" --build-dir="$PWD/$build" --strip-rom --qemu-append="$QEMU_FLAGS-S -s"
         ;;
     list)
         echo "Start of section .text:"
