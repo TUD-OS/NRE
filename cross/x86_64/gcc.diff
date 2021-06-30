@@ -145,6 +145,21 @@ diff -rcN src/gcc/gcc-org/doc/gcc.texi src/gcc/gcc/doc/gcc.texi
   @item 51 Franklin Street, Fifth Floor
   @tab Tel 617-542-5942
   @item Boston, MA 02110-1301 USA
+diff -rcN src/gcc-org/gcc/cp/cfns.h src/gcc/gcc/cp/cfns.h
+*** src/gcc-org/gcc/cp/cfns.h 2017-01-16 14:41:17.453844930 +0100
+--- src/gcc/gcc/cp/cfns.h 2017-01-16 14:46:55.271854999 +0100
+***************
+*** 124,132 ****
+  
+  #ifdef __GNUC__
+  __inline
+- #ifdef __GNUC_STDC_INLINE__
+- __attribute__ ((__gnu_inline__))
+- #endif
+  #endif
+  const char *
+  libc_name_p (register const char *str, register unsigned int len)
+--- 124,129 ----
 diff -rcN src/gcc-4.8.1/libgcc/config/t-nulnova src/gcc/libgcc/config/t-nulnova
 *** src/gcc-4.8.1/libgcc/config/t-nulnova	1970-01-01 01:00:00.000000000 +0100
 --- src/gcc/libgcc/config/t-nulnova	2013-08-02 21:40:19.211256296 +0200
