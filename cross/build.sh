@@ -41,7 +41,7 @@ fi
 echo "Downloading binutils, gcc and newlib..."
 wget -c http://ftp.gnu.org/gnu/binutils/binutils-2.23.2.tar.bz2
 wget -c http://ftp.gnu.org/gnu/gcc/gcc-4.8.1/gcc-4.8.1.tar.bz2
-wget -c ftp://sources.redhat.com/pub/newlib/newlib-1.20.0.tar.gz
+wget -c ftp://sourceware.org/pub/newlib/newlib-1.20.0.tar.gz
 
 BINVER=2.23.2
 GCCVER=4.8.1
