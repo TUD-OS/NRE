@@ -161,6 +161,13 @@ void out_info(const char *msg) {
     out_char('\n');
 }
 
+unsigned int strlen(char const *s) {
+    const char *begin = s;
+    while(*s)
+        s++;
+    return s - begin;
+}
+
 int strcmp(char const *s1, char const *s2) {
     while(*s1 && *s1 == *s2)
         s1++, s2++;

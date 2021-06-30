@@ -27,7 +27,6 @@
  */
 #define memcpy(x, y, z) __builtin_memcpy(x, y, z)
 #define memset(x, y, z) __builtin_memset(x, y, z)
-#define strlen(x)     __builtin_strlen(x)
 
 #ifndef NDEBUG
 
@@ -92,6 +91,7 @@ void out_description(const char *prefix, unsigned int value);
 void out_info(const char *msg);
 
 char *get_arg(char **, char);
+unsigned int strlen(char const *);
 int strcmp(char const *, char const *);
 unsigned long strtoul (char const *, char const **, int);
 
