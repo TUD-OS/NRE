@@ -117,6 +117,34 @@ diff -rcN src/gcc-4.8.1/gcc/config.gcc src/gcc/gcc/config.gcc
   aarch64*-*-elf)
   	tm_file="${tm_file} dbxelf.h elfos.h newlib-stdint.h"
   	tm_file="${tm_file} aarch64/aarch64-elf.h aarch64/aarch64-elf-raw.h"
+diff -rcN src/gcc/gcc-org/doc/gcc.texi src/gcc/gcc/doc/gcc.texi
+*** src/gcc/gcc-org/doc/gcc.texi  2017-01-16 14:27:27.795405663 +0100
+--- src/gcc/gcc/doc/gcc.texi  2017-01-16 14:28:41.271638428 +0100
+***************
+*** 83,93 ****
+  Published by:
+  @multitable @columnfractions 0.5 0.5
+  @item GNU Press
+! @tab Website: www.gnupress.org
+  @item a division of the
+! @tab General: @tex press@@gnu.org @end tex
+  @item Free Software Foundation
+! @tab Orders:  @tex sales@@gnu.org @end tex
+  @item 51 Franklin Street, Fifth Floor
+  @tab Tel 617-542-5942
+  @item Boston, MA 02110-1301 USA
+--- 83,93 ----
+  Published by:
+  @multitable @columnfractions 0.5 0.5
+  @item GNU Press
+! @tab Website: @uref{http://www.gnupress.org}
+  @item a division of the
+! @tab General: @email{press@@gnu.org}
+  @item Free Software Foundation
+! @tab Orders:  @email{sales@@gnu.org}
+  @item 51 Franklin Street, Fifth Floor
+  @tab Tel 617-542-5942
+  @item Boston, MA 02110-1301 USA
 diff -rcN src/gcc-4.8.1/libgcc/config.host src/gcc/libgcc/config.host
 *** src/gcc-4.8.1/libgcc/config.host	2013-02-04 20:06:20.000000000 +0100
 --- src/gcc/libgcc/config.host	2013-08-02 16:47:30.070856102 +0200
