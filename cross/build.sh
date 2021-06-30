@@ -144,7 +144,7 @@ if $BUILD_GCC; then
     cd $BUILD/gcc
     if [ $REBUILD -eq 1 ] || [ ! -f $BUILD/gcc/Makefile ]; then
         CFLAGS="-g -O2 -D_POSIX_THREADS -D_UNIX98_THREAD_MUTEX_ATTRIBUTES -DPTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP" \
-            $SRC/gcc/configure --target=$TARGET --prefix=$PREFIX --disable-nls \
+            CXXFLAGS="-O2 -std=c++11" $SRC/gcc/configure --target=$TARGET --prefix=$PREFIX --disable-nls \
             --enable-languages=c,c++ --with-headers=$HEADER \
             --disable-linker-build-id --with-gxx-include-dir=$HEADER/cpp --enable-threads=posix
         if [ $? -ne 0 ]; then
